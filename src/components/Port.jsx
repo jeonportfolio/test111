@@ -8,67 +8,33 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 const Port = () => {
     const horizontalRef = useRef(null);
     const sectionRef = useRef([]);
-    // react에서 가로모드 gsap을 쓰려면 전체적인 길이를 알아야 하기떄문에 useRef를 사용한다. 
-    // useEffect(() => {
-    //     gsap.registerPlugin(ScrollTrigger);
+     //react에서 가로모드 gsap을 쓰려면 전체적인 길이를 알아야 하기떄문에 useRef를 사용한다. 
+     useEffect(() => {
+         gsap.registerPlugin(ScrollTrigger)
+         const horizontal = horizontalRef.current;
+         const sections = sectionRef.current;
+         let scrollTween =gsap.to(sections, {
+             xPercent: -100 * (sections.length -1),
+             // 현재의 넓이는 빼주는 것 
+             ease: "none",
+             scrollTrigger: {
+                 trigger: horizontal,
+                 start: "top 30px",
+                 end: () => "+=" + horizontal.offsetWidth,
+                 pin: true,
+                 scrub: 1,
+                 markers: false,
+                 invalidateOnRefresh: true,
+                 anticipatePin: 1,
+             }
+         })
+         return () => {
+             scrollTween.kill();
+             //port부분에 따로 만든 스크립트이기 때문에 다른 섹션으로 넘어갈때는 이 gsap가 꺼지게 해야 안깨진다.
+         }
+     },[]);
 
-    //     const horizontal = horizontalRef.current;
-    //     const sections = sectionRef.current;
-    
-    //     let scrollTween =gsap.to(sections, {
-    //         xPercent: -100 * (sections.length -1),
-    //         // 현재의 넓이는 빼주는 것 
-    //         ease: "none",
-    //         scrollTrigger: {
-    //             trigger: horizontal,
-    //             start: "top 30px",
-    //             end: () => "+=" + horizontal.offsetWidth,
-    //             pin: true,
-    //             scrub: 1,
-    //             markers: false,
-    //             invalidateOnRefresh: true,
-    //             anticipatePin: 1,
-    //         }
-    //     })
-    //     return () => {
-    //         scrollTween.kill();
-    //         //port부분에 따로 만든 스크립트이기 때문에 다른 섹션으로 넘어갈때는 이 gsap가 꺼지게 해야 안깨진다.
-    //     }
-    // },[]);
-
-    useEffect(() => {
-        gsap.registerPlugin(ScrollTrigger);
-    
-        const horizontal = horizontalRef.current;
-        const sections = sectionRef.current;
-    
-        let scrollTween = gsap.to(sections, {
-            xPercent: -100 * (sections.length - 1),
-            ease: "none",
-            scrollTrigger: {
-                trigger: horizontal,
-                start: "top top",
-                end: () => "+=" + horizontal.offsetWidth,
-                pin: true,
-                scrub: 1,
-                markers: false,
-                invalidateOnRefresh: true,
-                anticipatePin: 1,
-            },
-        });
-    
-        const handleResize = () => {
-            ScrollTrigger.refresh();
-        };
-    
-        window.addEventListener("resize", handleResize);
-    
-        return () => {
-            scrollTween.kill();
-            window.removeEventListener("resize", handleResize);
-        };
-    }, []);
-    
+   
 
   return (
             <section id="port" ref={horizontalRef}> 
